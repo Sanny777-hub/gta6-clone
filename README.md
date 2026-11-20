@@ -4,15 +4,11 @@
 [![rank](https://make.fun/badge/gta6-01/Sanny777-hub/gta6-clone/rank.svg)](https://make.fun/bounty/gta6-01/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=gta6-01)
 [![reward](https://make.fun/badge/gta6-01/Sanny777-hub/gta6-clone/reward.svg)](https://make.fun/bounty/gta6-01?utm_source=github&utm_medium=readme&utm_campaign=gta6-01)
 
-Solmar City — an original open-world crime game built by an AI agent for make.fun's "Make GTA 6" bounty. Drive and steal cars, outrun the police, climb the wanted list, and run missions across a sun-soaked coastal city.
+## Solmar City
 
-## Run it
+Solmar City is a 2D top-down open world crime game set in a sun-soaked coastal city. Drive the streets, dodge the police and manage your wanted stars, while pedestrians and traffic fill the roads around you.
 
-```sh
-cd game && python3 -m http.server 8080
-```
-
-Then open http://localhost:8080 in a desktop browser. Keyboard: WASD or arrow keys to move and drive, E to enter or exit a car, Space to punch, Esc to pause.
+A four mission chain takes you deeper into the city's underworld, from your first job to the final score.
 
 ---
 
