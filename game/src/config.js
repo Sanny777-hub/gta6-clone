@@ -1,113 +1,96 @@
-// Solmar City — global game constants.
+// Solmar City — game configuration.
+// A sun-soaked coastal city with a golden-hour palette. Values tuned by hand.
 
+// World size in world units: a wide rectangle, roughly twice as wide as tall.
+// Big enough for a city street grid, with a beach strip along the south edge.
 export const WORLD = {
-  width: 2400,
-  height: 1800,
-  roadSpacing: 300,      // grid pitch
-  roadWidth: 64,
-  sidewalkWidth: 16,
-  beachBand: 240,        // bottom beach+sea band (pixels tall)
+  width: 3200,
+  height: 1600,
 };
 
+// Golden-hour palette: warm sand, terracotta roofs, teal sea, dark asphalt,
+// pale sidewalks, grass, and a few building tones.
 export const COLORS = {
-  asphalt: '#3b3d42',
-  roadLine: '#e9d07a',        // dashed center lines, sun-warmed yellow
-  sidewalk: '#c8bfae',
-  grass: '#7aa45a',
-  sand: '#e7d29a',
-  sea: '#2f7fa8',
-
-  roofWarm: [
-    '#b3563b',  // terracotta
-    '#c98a4e',  // baked clay
-    '#8a4a3d',  // dusty brick
-    '#d4a15a',  // sandstone
-  ],
-
-  player: '#2f6f4e',           // deep green jacket
-  policeCar: '#e8ecf1',
-  trafficCars: [
-    '#d9534f',
-    '#f0ad4e',
-    '#5bc0de',
-    '#9b59b6',
-    '#ecf0f1',
-  ],
-  pedShirts: [
-    '#e67e22',
-    '#3498db',
-    '#1abc9c',
-    '#e74c3c',
-    '#f1c40f',
-  ],
-
-  hudPanel: 'rgba(18, 22, 28, 0.72)',
-  minimapRoad: '#8a8f96',
-  minimapMarker: '#f5d06a',
+  sand: '#e8c07a',
+  sandLight: '#f2d9a4',
+  terracotta: '#c96a4e',
+  terracottaDark: '#a8533c',
+  terracottaLight: '#e08a6a',
+  sea: '#1e7a8c',
+  seaDeep: '#145a66',
+  seaFoam: '#9fd8c9',
+  asphalt: '#2e2e30',
+  sidewalk: '#b8b0a0',
+  grass: '#5a8f4a',
+  building: '#d9a066',
+  buildingLight: '#e8c9a0',
+  buildingDark: '#8a6a4a',
 };
 
+// On-foot player movement.
 export const PLAYER = {
-  walkSpeed: 220,   // px / s
-  radius: 14,
-  maxHealth: 100,
+  speed: 220,      // world units per second
+  radius: 14,      // body radius in world units
+  maxHealth: 100,  // maximum health
 };
 
+// Car physics.
 export const CAR = {
-  accel: 500,           // px / s^2
-  maxSpeed: 420,
-  reverseMax: 160,
-  turnRate: 2.6,        // rad / s
-  length: 46,
-  width: 22,
+  acceleration: 320,  // world units per second squared
+  maxSpeed: 520,      // world units per second
+  turnRate: 2.6,      // radians per second
+  length: 46,         // world units
+  width: 22,          // world units
 };
 
+// Pedestrian movement.
 export const PED = {
-  walkMin: 40,
-  walkMax: 70,
+  walkSpeed: 60,  // world units per second
 };
 
+// Police pursuit.
 export const POLICE = {
-  carMaxSpeed: 460,
-  footCopSpeed: 240,
-  spawnInterval: 4,     // seconds
+  carSpeed: 560,       // police car speed, world units per second
+  onFootSpeed: 240,    // police on-foot speed, world units per second
+  spawnDistance: 600,  // distance from the player where police spawn
 };
 
+// Wanted system. The heat value needed to reach each wanted level, and how
+// many seconds without committing a crime before the wanted level decays.
 export const WANTED = {
-  decaySeconds: 25,     // no crime + out of sight -> stars fall off
-  starThresholds: [1, 2, 3, 4, 5],
+  thresholds: [10, 25, 50, 90, 140],  // heat for wanted levels 1..5
+  decayDelay: 10,                     // seconds without a crime before decay
 };
 
+// The four missions, in order.
 export const MISSIONS = [
   {
-    id: 'm1',
+    id: 'hot-wheels',
     title: 'Hot Wheels',
-    objective: 'Steal any car off the street.',
+    objective: 'Steal any car',
     reward: 300,
   },
   {
-    id: 'm2',
+    id: 'the-package',
     title: 'The Package',
-    objective: 'Pick up the package at the marked point.',
+    objective: 'Drive to the marker',
     reward: 500,
   },
   {
-    id: 'm3',
+    id: 'break-the-heat',
     title: 'Break the Heat',
-    objective: 'Shake the cops until your wanted level drops to zero.',
+    objective: 'Bring your wanted level back to zero',
     reward: 700,
   },
   {
-    id: 'm4',
+    id: 'safehouse-drop',
     title: 'Safehouse Drop',
-    objective: 'Deliver everything to the safehouse.',
+    objective: 'Deliver to the safehouse',
     reward: 1000,
   },
 ];
 
-export const STEP = 1 / 60;
-
-export const BEST_KEY = 'solmar-best';
-
+// Keyboard bindings.
 export const KEYS = {
   up: 'ArrowUp',
   down: 'ArrowDown',
@@ -117,3 +100,9 @@ export const KEYS = {
   action: 'KeyF',
   pause: 'KeyP',
 };
+
+// Fixed simulation step: one sixtieth of a second.
+export const STEP = 1 / 60;
+
+// localStorage key holding the best money.
+export const BEST_KEY = 'solmar-best';

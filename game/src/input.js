@@ -1,82 +1,87 @@
-// Solmar City — keyboard + mouse input.
-//
-// Tracks held keys for movement (arrow keys + WASD, live) and latches
-// edge-triggered actions (enter / action / pause). Edge actions stay true
-// once seen until consume() clears them, so a single key press or canvas
-// tap is reported exactly once. No build step, no dependencies.
+// Solmar City — keyboard input.
+// Reads held keys for continuous movement (read) and one-shot actions
+// (consume) for confirm / pause / enter. Purely window-event driven, no deps.
 
-import { KEYS } from './config.js';
-
-// Action tags exported for callers that want to label an action.
+// Named action constants. The game loop reads them off the object returned by
+// consume(): e.g. consume()[ACTION_CONFIRM] is true when Enter went down.
 export const ACTION_CONFIRM = 'confirm';
 export const ACTION_PAUSE = 'pause';
 
+// Each logical action maps to one or more physical key codes.
+const ACTION_KEYS = {
+  up: ['ArrowUp', 'KeyW'],
+  down: ['ArrowDown', 'KeyS'],
+  left: ['ArrowLeft', 'KeyA'],
+  right: ['ArrowRight', 'KeyD'],
+  enter: ['KeyE'],
+  action: ['KeyF'],
+  pause: ['KeyP'],
+  confirm: ['Enter', 'NumpadEnter'],
+};
+
+// Keys whose default browser behaviour (page scroll) must be suppressed.
+const PREVENT_DEFAULT = new Set([
+  'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space',
+]);
+
 export function createInput(canvas) {
+  // Key codes physically held right now (true while the key is down).
   const held = new Set();
-  let confirmEdge = false;
-  let actionEdge = false;
-  let pauseEdge = false;
+  // Key codes that went down since the last consume() (one-shot edge).
+  const pressed = new Set();
 
-  const root = globalThis;
-
-  const isArrow = (code) =>
-    code === KEYS.up || code === KEYS.down ||
-    code === KEYS.left || code === KEYS.right;
-
-  const isScrollKey = (code) => isArrow(code) || code === 'Space';
-
-  const onKeyDown = (e) => {
-    // Keep arrow keys / space from scrolling the page while playing.
-    if (isScrollKey(e.code)) e.preventDefault();
-    if (e.repeat) return; // auto-repeat must not re-trigger an edge
-    held.add(e.code);
-    if (e.code === KEYS.enterCar || e.code === 'Enter' || e.code === 'NumpadEnter') {
-      confirmEdge = true;
-    }
-    if (e.code === KEYS.action) actionEdge = true;
-    if (e.code === KEYS.pause) pauseEdge = true;
+  const onKeyDown = (event) => {
+    if (PREVENT_DEFAULT.has(event.code)) event.preventDefault();
+    if (event.repeat) return; // a held key only counts once for consume()
+    held.add(event.code);
+    pressed.add(event.code);
   };
 
-  const onKeyUp = (e) => {
-    held.delete(e.code);
+  const onKeyUp = (event) => {
+    if (PREVENT_DEFAULT.has(event.code)) event.preventDefault();
+    held.delete(event.code);
   };
 
   const onBlur = () => {
+    // Losing focus means no key is held any more. One-shot edges are kept so
+    // a press that happened right before the blur is still reported once.
     held.clear();
   };
 
-  if (typeof root.addEventListener === 'function') {
-    root.addEventListener('keydown', onKeyDown);
-    root.addEventListener('keyup', onKeyUp);
-    root.addEventListener('blur', onBlur);
-  }
+  window.addEventListener('keydown', onKeyDown);
+  window.addEventListener('keyup', onKeyUp);
+  window.addEventListener('blur', onBlur);
 
-  // A click or tap on the game canvas counts as a confirm.
-  if (canvas && typeof canvas.addEventListener === 'function') {
-    const onPrimary = (e) => {
-      if (e.button !== undefined && e.button !== 0) return;
-      confirmEdge = true;
+  const isHeld = (codes) => codes.some((code) => held.has(code));
+  const wasPressed = (codes) => codes.some((code) => pressed.has(code));
+
+  const read = () => ({
+    up: isHeld(ACTION_KEYS.up),
+    down: isHeld(ACTION_KEYS.down),
+    left: isHeld(ACTION_KEYS.left),
+    right: isHeld(ACTION_KEYS.right),
+    enter: isHeld(ACTION_KEYS.enter),
+    action: isHeld(ACTION_KEYS.action),
+    pause: isHeld(ACTION_KEYS.pause),
+  });
+
+  // Returns and clears the one-shot action set. Same field names as read(),
+  // plus a "confirm" field for the Enter key. Each field is true only if that
+  // key went down since the previous consume() call.
+  const consume = () => {
+    const result = {
+      up: wasPressed(ACTION_KEYS.up),
+      down: wasPressed(ACTION_KEYS.down),
+      left: wasPressed(ACTION_KEYS.left),
+      right: wasPressed(ACTION_KEYS.right),
+      enter: wasPressed(ACTION_KEYS.enter),
+      action: wasPressed(ACTION_KEYS.action),
+      pause: wasPressed(ACTION_KEYS.pause),
+      confirm: wasPressed(ACTION_KEYS.confirm),
     };
-    canvas.addEventListener('pointerdown', onPrimary);
-    canvas.addEventListener('click', onPrimary);
-  }
-
-  return {
-    read() {
-      return {
-        up: held.has(KEYS.up) || held.has('KeyW'),
-        down: held.has(KEYS.down) || held.has('KeyS'),
-        left: held.has(KEYS.left) || held.has('KeyA'),
-        right: held.has(KEYS.right) || held.has('KeyD'),
-        enter: confirmEdge,
-        action: actionEdge,
-        pause: pauseEdge,
-      };
-    },
-    consume() {
-      confirmEdge = false;
-      actionEdge = false;
-      pauseEdge = false;
-    },
+    pressed.clear();
+    return result;
   };
+
+  return { read, consume };
 }
