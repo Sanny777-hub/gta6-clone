@@ -869,3 +869,5 @@ export function createRenderer(canvas) {
 
   return { draw };
 }
+
+// Renders the game world, HUD, and screens to the 2D canvas.

@@ -28,3 +28,4 @@ export function createRandom(seed) {
 
   return { next, int, pick, range };
 }
+// Seeded PRNG producing reproducible random values.

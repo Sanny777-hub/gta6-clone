@@ -556,3 +556,4 @@ export function createWorld(random) {
 
   return { state, reset, step };
 }
+// Core deterministic simulation and world state.

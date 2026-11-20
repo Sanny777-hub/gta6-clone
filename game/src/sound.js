@@ -248,3 +248,5 @@ export function createSound() {
 
   return { engine, siren, blip, jingle, thud };
 }
+
+// Generates procedural WebAudio sound effects.

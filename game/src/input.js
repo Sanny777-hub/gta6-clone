@@ -85,3 +85,5 @@ export function createInput(canvas) {
 
   return { read, consume };
 }
+
+// Reads and consumes keyboard input for the game.

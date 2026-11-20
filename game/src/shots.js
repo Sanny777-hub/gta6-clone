@@ -318,3 +318,4 @@ export function stageShot(name, seed) {
 
   return { screen: 'play', state };
 }
+// Staged screenshot scenes: deterministic, scripted gameplay moments used to render promo frames.

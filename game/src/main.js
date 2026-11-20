@@ -190,3 +190,4 @@ boot();
 export function getWorldState() {
   return world ? world.state : null;
 }
+// Game entry point: boots the modules and drives the screen state machine with a fixed-timestep loop.

@@ -106,3 +106,4 @@ export const STEP = 1 / 60;
 
 // localStorage key holding the best money.
 export const BEST_KEY = 'solmar-best';
+// Central tunable settings for the whole game.
